@@ -1,0 +1,1316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MKTSCAN PRO v2.0 — India + Global Intelligence Terminal</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --A:#FFB000; --G:#00FF41; --C:#00FFFF; --R:#FF3131;
+  --W:#E0E0E0; --D:#555555; --O:#FF6600;
+  --bg:#000; --b2:#0A0A0A; --bd:#1A1A1A; --hl:#1C1C00;
+}
+body {
+  background:var(--bg); color:var(--W);
+  font-family:'Courier New','Lucida Console',monospace;
+  font-size:11px; line-height:1.4;
+  height:100vh; display:flex; flex-direction:column;
+  overflow:hidden; user-select:none; cursor:default;
+}
+/* ── TOPBAR ── */
+#topbar {
+  background:var(--A); color:#000; padding:2px 8px;
+  display:flex; justify-content:space-between; align-items:center;
+  font-weight:bold; font-size:11px; flex-shrink:0;
+}
+.clocks { display:flex; gap:12px; }
+.live-b { background:#222200; color:var(--A); padding:0 4px; }
+/* ── DUAL TICKER ── */
+#ticker-wrap {
+  background:#0D0D00; border-bottom:1px solid var(--A);
+  overflow:hidden; height:18px; flex-shrink:0; position:relative;
+}
+#ticker-inner { position:absolute; white-space:nowrap; font-size:11px; line-height:18px; font-weight:bold; }
+/* ── NAVBAR ── */
+#navbar {
+  background:#111100; border-bottom:1px solid #FFB00033;
+  padding:0 4px; display:flex; gap:0;
+  font-size:11px; flex-shrink:0; align-items:stretch;
+}
+.nav-group { display:flex; align-items:stretch; border-right:2px solid #333; padding-right:2px; margin-right:2px; }
+.nav-group-label { color:var(--D); padding:0 6px; align-self:center; font-size:10px; }
+.nav-btn {
+  color:var(--A); padding:2px 8px; cursor:pointer;
+  font-weight:bold; font-family:inherit; font-size:11px;
+  background:transparent; border:none; border-right:1px solid #1a1a1a;
+  white-space:nowrap;
+}
+.nav-btn:hover { background:#1C1C00; }
+.nav-btn.active { background:var(--A); color:#000; }
+#nav-history { margin-left:auto; color:var(--D); font-size:10px; align-self:center; padding-right:6px; }
+/* ── DUAL STATUS BARS ── */
+#sb-india {
+  background:#050500; border-bottom:1px solid #2a2a00;
+  padding:1px 8px; display:flex; gap:10px;
+  font-size:10px; flex-shrink:0; align-items:center; overflow:hidden;
+}
+#sb-global {
+  background:#000505; border-bottom:1px solid var(--bd);
+  padding:1px 8px; display:flex; gap:10px;
+  font-size:10px; flex-shrink:0; align-items:center; overflow:hidden;
+}
+.sep { color:var(--D); }
+/* ── MAIN ── */
+#main { flex:1; display:flex; overflow:hidden; }
+/* ── LEFT PANEL ── */
+#left-panel {
+  width:52%; display:flex; flex-direction:column;
+  border-right:1px solid var(--bd); overflow:hidden;
+}
+.panel-header {
+  background:#0A0A00; padding:2px 8px;
+  border-bottom:1px solid #FFB00044;
+  color:var(--A); font-weight:bold; font-size:11px;
+  display:flex; justify-content:space-between; flex-shrink:0;
+}
+.ph-r { color:var(--D); }
+/* FEED TABS */
+#feed-tabs { display:flex; background:#050500; border-bottom:1px solid var(--bd); flex-shrink:0; }
+.feed-tab {
+  padding:2px 10px; cursor:pointer; font-size:10px; font-weight:bold;
+  color:var(--D); border-right:1px solid var(--bd); font-family:inherit;
+  background:transparent; border-top:none; border-bottom:none; border-left:none;
+}
+.feed-tab:hover { color:var(--A); }
+.feed-tab.active { color:#000; background:var(--A); }
+#news-list { flex:1; overflow-y:auto; }
+#news-list::-webkit-scrollbar { width:4px; }
+#news-list::-webkit-scrollbar-thumb { background:#333; }
+.news-item {
+  padding:3px 8px; border-bottom:1px solid #111;
+  cursor:pointer; border-left:3px solid transparent;
+}
+.news-item:hover { background:#0D0D00; }
+.news-item.sel { background:var(--hl); border-left-color:var(--A); }
+.nr1 { display:flex; gap:5px; align-items:flex-start; }
+.nn { color:var(--D); min-width:18px; flex-shrink:0; }
+.nt { min-width:14px; font-size:9px; margin-top:1px; flex-shrink:0; }
+.ntm { color:var(--D); min-width:58px; flex-shrink:0; }
+.ns { min-width:46px; flex-shrink:0; color:var(--C); }
+.nh { color:var(--W); flex:1; }
+.news-item.sel .nh { font-weight:bold; }
+.nr2 { display:flex; gap:5px; margin-top:2px; margin-left:94px; flex-wrap:wrap; }
+.nse { font-size:10px; } .nvo { font-size:10px; } .ntg { color:var(--D); font-size:9px; }
+/* INDIA badge */
+.badge-in { background:#1a0800; color:var(--O); font-size:8px; padding:0 3px; border:1px solid var(--O); }
+.badge-gl { background:#001a1a; color:var(--C); font-size:8px; padding:0 3px; border:1px solid var(--C); }
+/* ── CENTER PANEL ── */
+#center-panel {
+  width:30%; display:flex; flex-direction:column;
+  border-right:1px solid var(--bd); overflow:hidden;
+}
+#detail-body { flex:1; padding:6px 8px; overflow-y:auto; }
+#detail-body::-webkit-scrollbar { width:4px; }
+#detail-body::-webkit-scrollbar-thumb { background:#333; }
+.dm { color:var(--D); margin-bottom:4px; font-size:10px; }
+.dh { color:var(--A); font-weight:bold; margin-bottom:6px; line-height:1.5; }
+.ds { border-top:1px solid var(--bd); padding-top:6px; margin-bottom:6px; }
+.dst { color:var(--C); font-size:10px; margin-bottom:3px; }
+.dtx { color:var(--W); line-height:1.6; }
+.itbl { width:100%; border-collapse:collapse; }
+.itbl thead td { color:var(--D); font-size:10px; padding-bottom:2px; }
+.itbl tbody td { padding:1px 0; min-width:70px; }
+.sgrid { display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.sc { background:#0A0A0A; padding:3px 6px; border:1px solid var(--bd); }
+.scl { color:var(--D); font-size:9px; } .scv { font-weight:bold; }
+/* ── RIGHT PANEL ── */
+#right-panel { width:18%; display:flex; flex-direction:column; overflow:hidden; }
+/* RIGHT TABS */
+#rt-tabs { display:flex; background:#050505; border-bottom:1px solid var(--bd); flex-shrink:0; }
+.rt-tab {
+  flex:1; padding:2px 4px; cursor:pointer; font-size:9px; font-weight:bold;
+  color:var(--D); text-align:center; font-family:inherit;
+  background:transparent; border:none; border-right:1px solid var(--bd);
+}
+.rt-tab.active { color:#000; background:var(--A); }
+.rt-tab:hover:not(.active) { color:var(--A); }
+#mkt-list { flex:1; overflow-y:auto; }
+#mkt-list::-webkit-scrollbar { width:3px; }
+#mkt-list::-webkit-scrollbar-thumb { background:#333; }
+.mr {
+  padding:2px 5px; border-bottom:1px solid #0D0D0D;
+  display:flex; justify-content:space-between; transition:background 0.3s;
+}
+.mr.fu { background:#002200; } .mr.fd { background:#220000; }
+.ms { color:var(--A); font-weight:bold; font-size:10px; }
+.mn { color:var(--D); font-size:9px; }
+.mp { color:var(--W); font-size:10px; text-align:right; }
+.mc { font-size:9px; font-weight:bold; text-align:right; }
+#risk-panel { border-top:1px solid var(--bd); padding:3px 5px; background:#050505; flex-shrink:0; }
+.rpt { color:var(--D); font-size:9px; margin-bottom:2px; font-weight:bold; }
+.rpr { display:flex; justify-content:space-between; font-size:9px; padding:1px 0; }
+/* ── CMD BAR ── */
+#cmdbar {
+  background:#050505; border-top:1px solid #FFB00044;
+  padding:3px 8px; display:flex; align-items:center; gap:8px; flex-shrink:0;
+}
+#cmd-prompt { color:var(--A); font-weight:bold; }
+#cmd-input {
+  background:transparent; border:none; outline:none;
+  color:var(--A); font-family:'Courier New',monospace;
+  font-size:11px; flex:1; caret-color:var(--A);
+}
+#cmd-input::placeholder { color:#2a2a2a; }
+#cmd-ready { color:var(--D); font-size:10px; min-width:65px; }
+/* ── FULL VIEWS ── */
+.fview { display:none; flex:1; overflow-y:auto; padding:6px 8px; }
+.fview::-webkit-scrollbar { width:4px; }
+.fview::-webkit-scrollbar-thumb { background:#333; }
+#view-top { display:flex; flex:1; overflow:hidden; padding:0; }
+.vtitle { color:var(--A); font-weight:bold; margin-bottom:8px; }
+/* MKT grid */
+.mkt-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.mkt-card { border:1px solid var(--bd); }
+.mkt-card-hdr { background:#0A0A00; padding:3px 8px; border-bottom:1px solid var(--bd); color:var(--A); font-weight:bold; font-size:10px; }
+.mft { width:100%; border-collapse:collapse; font-size:11px; }
+.mft thead td { padding:2px 8px; color:var(--C); font-size:10px; }
+.mft tbody tr { border-top:1px solid #0D0D0D; }
+.mft tbody td { padding:2px 8px; }
+/* SECTOR grid */
+.sec-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:10px; }
+.sec-card { border:1px solid var(--bd); }
+.sec-hdr { background:#0A0A00; padding:2px 8px; border-bottom:1px solid var(--bd); color:var(--A); font-size:10px; font-weight:bold; display:flex; justify-content:space-between; }
+.sect { width:100%; border-collapse:collapse; font-size:11px; }
+.sect tr { border-bottom:1px solid #0D0D0D; }
+.sect td { padding:2px 8px; }
+/* ECO */
+.eco-t { width:100%; border-collapse:collapse; font-size:11px; }
+.eco-t thead tr { border-bottom:1px solid var(--bd); }
+.eco-t thead td { padding:3px 8px; color:var(--C); }
+.eco-t tbody tr { border-bottom:1px solid #0D0D0D; }
+.eco-t tbody td { padding:2px 8px; }
+/* CMD */
+.cb { border:1px solid var(--bd); margin-bottom:10px; }
+.cbh { background:#0A0A00; padding:2px 8px; color:var(--C); font-size:10px; border-bottom:1px solid var(--bd); }
+.cr { display:flex; gap:10px; padding:2px 8px; border-bottom:1px solid #0D0D0D; }
+.ck { color:var(--A); min-width:160px; font-weight:bold; flex-shrink:0; }
+.cv { color:var(--G); font-weight:bold; min-width:55px; flex-shrink:0; }
+.ar { padding:2px 8px; border-bottom:1px solid #0D0D0D; color:var(--W); font-size:10px; }
+/* RBI */
+.rbi-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.rbi-card { border:1px solid var(--bd); }
+.rbi-card-hdr { background:#0A0A00; padding:2px 8px; color:var(--A); font-size:10px; font-weight:bold; border-bottom:1px solid var(--bd); }
+.rbi-row { display:flex; justify-content:space-between; padding:2px 8px; border-bottom:1px solid #0D0D0D; font-size:11px; }
+/* FED */
+.fed-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+/* IPO table */
+.ipo-t { width:100%; border-collapse:collapse; font-size:11px; margin-bottom:12px; }
+.ipo-t thead td { padding:3px 8px; color:var(--C); border-bottom:1px solid var(--bd); }
+.ipo-t tbody tr { border-bottom:1px solid #0D0D0D; }
+.ipo-t tbody td { padding:2px 8px; }
+</style>
+</head>
+<body onclick="document.getElementById('cmd-input').focus()">
+
+<!-- ═══════════════════════════════════════════════════════════════════ TOPBAR -->
+<div id="topbar">
+  <span>◼ MKTSCAN PRO v2.0 — INDIA + GLOBAL INTELLIGENCE TERMINAL  [BENGALURU]</span>
+  <div class="clocks">
+    <span id="cl-ist"></span>
+    <span style="color:#444">|</span>
+    <span id="cl-ny"></span>
+    <span id="cl-ln"></span>
+    <span id="cl-sg"></span>
+    <span id="cl-tk"></span>
+  </div>
+  <div style="display:flex;gap:8px;font-size:10px">
+    <span class="live-b">LIVE</span>
+    <span>◼ <span id="blink-dot">●</span> FEED ACTIVE</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ TICKER -->
+<div id="ticker-wrap"><div id="ticker-inner"></div></div>
+
+<!-- ══════════════════════════════════════════════════════════════════ NAVBAR -->
+<div id="navbar">
+  <div class="nav-group">
+    <span class="nav-group-label" style="color:var(--O)">IN/</span>
+    <button class="nav-btn active" onclick="setView('top','in')">TOP</button>
+    <button class="nav-btn" onclick="setView('mkt','in')">MKT</button>
+    <button class="nav-btn" onclick="setView('sec','in')">SECTOR</button>
+    <button class="nav-btn" onclick="setView('eco','in')">ECO</button>
+    <button class="nav-btn" onclick="setView('rbi','in')">RBI</button>
+    <button class="nav-btn" onclick="setView('ipo','in')">IPO</button>
+  </div>
+  <div class="nav-group">
+    <span class="nav-group-label" style="color:var(--C)">GL/</span>
+    <button class="nav-btn" onclick="setView('top','gl')">TOP</button>
+    <button class="nav-btn" onclick="setView('gmkt','gl')">MKT</button>
+    <button class="nav-btn" onclick="setView('fx','gl')">FX</button>
+    <button class="nav-btn" onclick="setView('geo','gl')">GEO</button>
+    <button class="nav-btn" onclick="setView('fed','gl')">FED/CB</button>
+    <button class="nav-btn" onclick="setView('eco','gl')">ECO</button>
+  </div>
+  <div class="nav-group">
+    <span class="nav-group-label">SYS/</span>
+    <button class="nav-btn" onclick="setView('cmd','sys')">CMD</button>
+  </div>
+  <span id="nav-history"></span>
+</div>
+
+<!-- ═════════════════════════════════════════════════════════════ DUAL STATUS -->
+<div id="sb-india">
+  <span style="color:var(--O);font-weight:bold">IN▸</span>
+  <span id="nse-st" style="color:var(--G)">NIFTY50 ▲ LIVE</span>
+  <span class="sep">|</span>
+  <span style="color:var(--A)">RBI HOLDS REPO 6.50% — NEUTRAL STANCE</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">REPO:6.50%</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">USD/INR:<span id="usdinr-sb">83.42</span></span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">10Y GSEC:7.12%</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">FII YTD:-₹28,342Cr</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">NEXT MPC: JUN 5-7</span>
+  <span style="margin-left:auto;color:var(--D)" id="vmode">TOP/IN MODE | CMD+ENTER</span>
+</div>
+<div id="sb-global">
+  <span style="color:var(--C);font-weight:bold">GL▸</span>
+  <span id="spx-st" style="color:var(--G)">SPX ▲ OPEN</span>
+  <span class="sep">|</span>
+  <span style="color:var(--A)">FED: HIGHER FOR LONGER — JUNE CUT 18%</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">FFR:5.25-5.50%</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">DXY:104.22</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">BRENT:$82.14</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">VIX:14.33</span>
+  <span class="sep">|</span>
+  <span style="color:var(--D)">NEXT FOMC: MAY 1</span>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════ MAIN -->
+<div id="main">
+
+  <!-- ─── TOP VIEW (shared 3-panel layout) ─── -->
+  <div id="view-top">
+    <div id="left-panel">
+      <div class="panel-header">
+        <span>◼ <span id="feed-title">INDIA MARKET INTELLIGENCE — VOLATILITY RANKED</span></span>
+        <span class="ph-r" id="news-count"></span>
+      </div>
+      <div id="feed-tabs">
+        <button class="feed-tab active" id="tab-in" onclick="switchFeed('in')">🇮🇳 INDIA</button>
+        <button class="feed-tab" id="tab-gl" onclick="switchFeed('gl')">🌐 GLOBAL</button>
+        <button class="feed-tab" id="tab-all" onclick="switchFeed('all')">ALL FEEDS</button>
+        <span style="color:var(--D);font-size:9px;align-self:center;margin-left:auto;padding-right:8px">SORTED:VOL▼</span>
+      </div>
+      <div id="news-list"></div>
+    </div>
+    <div id="center-panel">
+      <div class="panel-header">
+        <span>◼ STORY DETAIL + IMPACT ANALYSIS</span>
+        <span class="ph-r" id="detail-ref"></span>
+      </div>
+      <div id="detail-body"><div style="padding:12px;color:var(--D)">SELECT A HEADLINE TO VIEW DETAIL</div></div>
+    </div>
+    <div id="right-panel">
+      <div class="panel-header"><span>◼ LIVE MARKETS</span><span class="ph-r" style="font-size:9px">∿18ms</span></div>
+      <div id="rt-tabs">
+        <button class="rt-tab active" id="rt-in" onclick="switchRT('in')">INDIA</button>
+        <button class="rt-tab" id="rt-fx" onclick="switchRT('fx')">FX/COMDTY</button>
+        <button class="rt-tab" id="rt-gl" onclick="switchRT('gl')">GLOBAL</button>
+      </div>
+      <div id="mkt-list"></div>
+      <div id="risk-panel" id="risk-panel"></div>
+    </div>
+  </div>
+
+  <!-- ─── INDIA MKT VIEW ─── -->
+  <div id="view-mkt" class="fview">
+    <div class="vtitle">◼ INDIA FULL MARKET OVERVIEW — NSE / BSE / MCX / DERIVATIVES</div>
+    <div class="mkt-grid" id="in-mkt-grid"></div>
+  </div>
+
+  <!-- ─── INDIA SECTOR VIEW ─── -->
+  <div id="view-sec" class="fview">
+    <div class="vtitle">◼ NSE SECTORAL INDICES — LIVE PERFORMANCE</div>
+    <div class="sec-grid" id="sec-grid"></div>
+  </div>
+
+  <!-- ─── ECO VIEW (combined) ─── -->
+  <div id="view-eco" class="fview">
+    <div class="vtitle">◼ ECONOMIC CALENDAR — <span id="eco-title">INDIA EVENTS</span></div>
+    <div id="eco-tabs" style="display:flex;margin-bottom:8px;gap:0">
+      <button class="feed-tab active" id="eco-tab-in" onclick="switchEco('in')" style="font-size:10px">🇮🇳 INDIA</button>
+      <button class="feed-tab" id="eco-tab-gl" onclick="switchEco('gl')" style="font-size:10px">🌐 GLOBAL</button>
+    </div>
+    <table class="eco-t" id="eco-table">
+      <thead><tr id="eco-thead"></tr></thead>
+      <tbody id="eco-body"></tbody>
+    </table>
+  </div>
+
+  <!-- ─── RBI VIEW ─── -->
+  <div id="view-rbi" class="fview">
+    <div class="vtitle">◼ RBI MONETARY POLICY COMMITTEE — FULL TRACKER</div>
+    <div id="rbi-content"></div>
+  </div>
+
+  <!-- ─── IPO VIEW ─── -->
+  <div id="view-ipo" class="fview">
+    <div class="vtitle">◼ INDIA IPO TRACKER — ACTIVE / UPCOMING / RECENT LISTINGS</div>
+    <div id="ipo-content"></div>
+  </div>
+
+  <!-- ─── GLOBAL MKT VIEW ─── -->
+  <div id="view-gmkt" class="fview">
+    <div class="vtitle">◼ GLOBAL MARKET OVERVIEW — EQUITIES / FOREX / RATES / COMMODITIES</div>
+    <div class="mkt-grid" id="gl-mkt-grid"></div>
+  </div>
+
+  <!-- ─── FX VIEW ─── -->
+  <div id="view-fx" class="fview">
+    <div class="vtitle">◼ GLOBAL FX + RATES DASHBOARD</div>
+    <div id="fx-content"></div>
+  </div>
+
+  <!-- ─── GEO VIEW ─── -->
+  <div id="view-geo" class="fview">
+    <div class="vtitle">◼ GEOPOLITICAL RISK MONITOR — INDIA IMPACT ASSESSMENT</div>
+    <div id="geo-content"></div>
+  </div>
+
+  <!-- ─── FED/CB VIEW ─── -->
+  <div id="view-fed" class="fview">
+    <div class="vtitle">◼ CENTRAL BANK TRACKER — FED / ECB / BOJ / BOE / RBI</div>
+    <div id="fed-content"></div>
+  </div>
+
+  <!-- ─── CMD VIEW ─── -->
+  <div id="view-cmd" class="fview">
+    <div class="vtitle">◼ MKTSCAN PRO v2.0 — COMMAND REFERENCE & ARCHITECTURE</div>
+    <div id="cmd-content"></div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════ CMD BAR -->
+<div id="cmdbar">
+  <span id="cmd-prompt">CMD&gt;</span>
+  <input id="cmd-input" type="text" placeholder="TRY: IN TOP  GL TOP  SECTOR  RBI  FED  IPO  FX  GEO  ECO  N 5  CMD" autocomplete="off" spellcheck="false" autofocus>
+  <span id="cmd-ready">█ READY</span>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════ CONSTANTS
+const A='#FFB000',G='#00FF41',C='#00FFFF',R='#FF3131',W='#E0E0E0',D='#555555',O='#FF6600';
+
+// ═══════════════════════════════════════════════════════════════════ INDIA MARKETS
+const IN_MKTS = [
+  {sym:'NIFTY',    name:'NIFTY 50',      price:22519.40, chg:0.38,  vol:'₹18,420Cr', cat:'IN-IDX'},
+  {sym:'SENSEX',   name:'BSE SENSEX',    price:74119.93, chg:0.41,  vol:'₹6,210Cr',  cat:'IN-IDX'},
+  {sym:'BANKNIFTY',name:'BANK NIFTY',    price:48231.15, chg:0.62,  vol:'₹22,100Cr', cat:'IN-IDX'},
+  {sym:'FINNIFTY', name:'FIN NIFTY',     price:21405.30, chg:0.55,  vol:'₹8,440Cr',  cat:'IN-IDX'},
+  {sym:'MIDCAP150',name:'NIFTY MIDCAP',  price:48312.80, chg:0.71,  vol:'₹3,210Cr',  cat:'IN-IDX'},
+  {sym:'SMALLCAP', name:'NIFTY SMCAP',   price:14221.45, chg:0.93,  vol:'₹1,840Cr',  cat:'IN-IDX'},
+  {sym:'NIFTYIT',  name:'NIFTY IT',      price:33841.20, chg:-0.34, vol:'₹2,840Cr',  cat:'IN-SEC'},
+  {sym:'NIFTYPSE', name:'NIFTY PSE',     price:6714.55,  chg:1.22,  vol:'₹1,920Cr',  cat:'IN-SEC'},
+  {sym:'NIFTYAUTO',name:'NIFTY AUTO',    price:22114.30, chg:1.14,  vol:'₹2,110Cr',  cat:'IN-SEC'},
+  {sym:'NIFTYPHRM',name:'NIFTY PHARMA',  price:19842.60, chg:0.87,  vol:'₹1,440Cr',  cat:'IN-SEC'},
+  {sym:'USDINR',   name:'USD/INR',       price:83.42,    chg:-0.06, vol:'—',          cat:'IN-FX'},
+  {sym:'EURINR',   name:'EUR/INR',       price:90.31,    chg:-0.11, vol:'—',          cat:'IN-FX'},
+  {sym:'GBPINR',   name:'GBP/INR',       price:105.88,   chg:0.08,  vol:'—',          cat:'IN-FX'},
+  {sym:'GSEC10Y',  name:'10Y G-SEC',     price:7.12,     chg:0.02,  vol:'—',          cat:'IN-BOND'},
+  {sym:'GSEC5Y',   name:'5Y G-SEC',      price:7.04,     chg:0.01,  vol:'—',          cat:'IN-BOND'},
+  {sym:'CRUDEOIL', name:'CRUDE MCX',     price:6841.00,  chg:-0.91, vol:'—',          cat:'IN-COMDTY'},
+  {sym:'GOLDMCX',  name:'GOLD MCX',      price:71420.00, chg:0.48,  vol:'—',          cat:'IN-COMDTY'},
+  {sym:'SILVERMCX',name:'SILVER MCX',    price:81340.00, chg:0.62,  vol:'—',          cat:'IN-COMDTY'},
+];
+
+// ═══════════════════════════════════════════════════════════════ GLOBAL MARKETS
+const GL_MKTS = [
+  {sym:'SPX',   name:'S&P 500',     price:5487.23,  chg:0.34,   vol:'3.2B',  cat:'GL-EQ'},
+  {sym:'NDX',   name:'NASDAQ 100',  price:19203.11, chg:0.61,   vol:'4.1B',  cat:'GL-EQ'},
+  {sym:'DJIA',  name:'DOW JONES',   price:39118.86, chg:-0.12,  vol:'2.8B',  cat:'GL-EQ'},
+  {sym:'FTSE',  name:'FTSE 100',    price:8245.67,  chg:0.22,   vol:'1.9B',  cat:'GL-EQ'},
+  {sym:'NKY',   name:'NIKKEI 225',  price:38947.12, chg:-0.43,  vol:'2.1B',  cat:'GL-EQ'},
+  {sym:'DAX',   name:'DAX',         price:18412.33, chg:0.18,   vol:'1.4B',  cat:'GL-EQ'},
+  {sym:'HSI',   name:'HANG SENG',   price:17843.55, chg:-1.23,  vol:'1.7B',  cat:'GL-EQ'},
+  {sym:'VIX',   name:'CBOE VIX',    price:14.33,    chg:2.11,   vol:'—',     cat:'GL-EQ'},
+  {sym:'EURUSD',name:'EUR/USD',     price:1.0823,   chg:-0.08,  vol:'—',     cat:'GL-FX'},
+  {sym:'USDJPY',name:'USD/JPY',     price:151.44,   chg:0.31,   vol:'—',     cat:'GL-FX'},
+  {sym:'GBPUSD',name:'GBP/USD',     price:1.2714,   chg:0.14,   vol:'—',     cat:'GL-FX'},
+  {sym:'USDCNH',name:'USD/CNH',     price:7.2441,   chg:0.09,   vol:'—',     cat:'GL-FX'},
+  {sym:'DXY',   name:'USD INDEX',   price:104.22,   chg:0.19,   vol:'—',     cat:'GL-FX'},
+  {sym:'XAUUSD',name:'GOLD SPOT',   price:2341.80,  chg:0.55,   vol:'—',     cat:'GL-COMDTY'},
+  {sym:'XBRUSD',name:'BRENT CRUDE', price:82.14,    chg:-0.88,  vol:'—',     cat:'GL-COMDTY'},
+  {sym:'XAGUSD',name:'SILVER SPOT', price:27.34,    chg:0.62,   vol:'—',     cat:'GL-COMDTY'},
+  {sym:'BTC',   name:'BTC/USD',     price:68441.20, chg:1.44,   vol:'—',     cat:'GL-CRYPTO'},
+  {sym:'ETH',   name:'ETH/USD',     price:3241.55,  chg:0.98,   vol:'—',     cat:'GL-CRYPTO'},
+  {sym:'US10Y', name:'US 10Y',      price:4.312,    chg:0.03,   vol:'—',     cat:'GL-RATES'},
+  {sym:'DE10Y', name:'BUND 10Y',    price:2.441,    chg:0.02,   vol:'—',     cat:'GL-RATES'},
+  {sym:'UK10Y', name:'GILT 10Y',    price:4.121,    chg:0.04,   vol:'—',     cat:'GL-RATES'},
+  {sym:'JP10Y', name:'JGB 10Y',     price:0.871,    chg:0.01,   vol:'—',     cat:'GL-RATES'},
+];
+
+// ═══════════════════════════════════════════════════════════════ INDIA NEWS
+const IN_NEWS = [
+  {id:'I01',region:'IN',tier:1,time:'09:45',source:'RBI',
+   headline:'RBI MPC HOLDS REPO AT 6.50%; GDP FORECAST REVISED UP TO 7.0% FOR FY25 — 5TH CONSECUTIVE HOLD',
+   sentiment:'NEUTRAL',vol:9.1,tags:['RATES','NIFTY','BANKNIFTY','INR','BONDS'],
+   impacts:[{sym:'USDINR',dir:'DOWN',mag:'MED'},{sym:'GSEC10Y',dir:'DOWN',mag:'HIGH'},{sym:'BANKNIFTY',dir:'UP',mag:'MED'},{sym:'NIFTY',dir:'UP',mag:'LOW'},{sym:'GOLDMCX',dir:'STABLE',mag:'LOW'}],
+   detail:'RBI Governor Shaktikanta Das: unanimous MPC decision hold repo at 6.50%. CPI projection 4.5% FY25. "Last mile of disinflation needs careful navigation." SDF 6.25%, MSF 6.75%. External member J.R. Varma dissented for 25bps cut. Next MPC: Jun 5-7, 2024.'},
+  {id:'I02',region:'IN',tier:1,time:'09:12',source:'SEBI',
+   headline:'SEBI RESTRICTS F&O WEEKLY EXPIRIES TO 1/EXCHANGE; MARGIN REQUIREMENTS HIKED 30% — EFFECTIVE JUL 1',
+   sentiment:'BEAR',vol:8.7,tags:['F&O','NIFTY','BANKNIFTY','VOLUMES','BROKERS'],
+   impacts:[{sym:'NIFTY',dir:'DOWN',mag:'MED'},{sym:'BANKNIFTY',dir:'DOWN',mag:'HIGH'},{sym:'FINNIFTY',dir:'DOWN',mag:'HIGH'}],
+   detail:'SEBI circular effective July 1. Restricts each exchange to one weekly benchmark expiry. Lot sizes reviewed every 6 months. Impact: 40-50% reduction in premium turnover. Zerodha, Angel One, Groww significantly affected. 9/10 retail F&O traders lose money — SEBI.'},
+  {id:'I03',region:'IN',tier:1,time:'08:55',source:'EARNINGS',
+   headline:'RELIANCE Q4FY24: NET PROFIT ₹18,951CR (+7% YOY); JIOFIBER SUBS 11.5MN; RETAIL EBITDA RECORD HIGH',
+   sentiment:'BULL',vol:8.4,tags:['RIL','NIFTY','SENSEX','TELECOM','RETAIL'],
+   impacts:[{sym:'NIFTY',dir:'UP',mag:'MED'},{sym:'SENSEX',dir:'UP',mag:'MED'}],
+   detail:'Revenue ₹2,40,714Cr (+11% YoY). EBITDA ₹43,931Cr. Jio ARPU ₹181.7. Retail footprint 18,774 stores. Net debt reduced ₹16,000Cr. Board recommended ₹10/share dividend. AGM: green energy capex roadmap expected.'},
+  {id:'I04',region:'IN',tier:1,time:'08:33',source:'BUDGET',
+   headline:'FM SITHARAMAN: CAPEX ₹11.11 LAKH CRORE FY25; FISCAL DEFICIT 5.1% GDP — PSU/INFRA SECTORS RALLY',
+   sentiment:'BULL',vol:8.9,tags:['CAPEX','INFRA','PSU','DEFENCE','RAILWAYS'],
+   impacts:[{sym:'NIFTYPSE',dir:'UP',mag:'HIGH'},{sym:'GSEC10Y',dir:'UP',mag:'MED'}],
+   detail:'Capex up 11.1% YoY. Railway allocation ₹2.55 lakh Cr. Defence ₹6.21 lakh Cr. Housing: 2Cr new homes PMAY. Direct tax FY24: ₹19.58 lakh Cr (+17.7%). Fiscal consolidation maintained.'},
+  {id:'I05',region:'IN',tier:2,time:'08:18',source:'FII/DII',
+   headline:'FII SOLD ₹4,820CR THURSDAY; YTD OUTFLOWS ₹28,342CR — CHINA REBOUND ROTATION ACCELERATES',
+   sentiment:'BEAR',vol:7.6,tags:['FII','NIFTY','INR','FLOWS','EM'],
+   impacts:[{sym:'NIFTY',dir:'DOWN',mag:'MED'},{sym:'USDINR',dir:'UP',mag:'MED'},{sym:'MIDCAP150',dir:'DOWN',mag:'HIGH'}],
+   detail:'DII buying ₹3,210Cr cushioned impact. Domestic MF SIP: ₹20,371Cr March (record). RBI FX intervention selling USD to defend 83.50. Reversal trigger: Fed cut signal or India earnings upgrade.'},
+  {id:'I06',region:'IN',tier:1,time:'08:02',source:'EARNINGS',
+   headline:'HDFC BANK Q4FY24: NII ₹29,078CR (+24% YOY); GNPA 1.24%; DEPOSIT GROWTH LAGS — STOCK PRESSURED',
+   sentiment:'MIXED',vol:7.9,tags:['HDFCBANK','BANKNIFTY','FINNIFTY','BANKING'],
+   impacts:[{sym:'BANKNIFTY',dir:'DOWN',mag:'MED'},{sym:'FINNIFTY',dir:'DOWN',mag:'MED'}],
+   detail:'Net profit ₹16,512Cr (+37% YoY post-merger). LDR 110% — elevated. CD ratio target: sub-100% in 4-6 quarters. NIMs compressed 20bps to 3.44%. CASA 44.1% vs 48.2% pre-merger.'},
+  {id:'I07',region:'IN',tier:2,time:'07:44',source:'MACRO',
+   headline:'INDIA CPI MARCH: 4.85% YOY vs 5.1%E — BELOW RBI COMFORT BAND; CORE CPI 3.25% MULTI-YEAR LOW',
+   sentiment:'BULL',vol:7.2,tags:['CPI','RBI','BONDS','INR','RATES'],
+   impacts:[{sym:'GSEC10Y',dir:'DOWN',mag:'MED'},{sym:'USDINR',dir:'DOWN',mag:'LOW'}],
+   detail:'Vegetable prices easing. Pulses +17.7% YoY still elevated. Fuel & light -3.6% YoY. OIS market pricing first 25bps cut by August 2024 at 38% probability.'},
+  {id:'I08',region:'IN',tier:1,time:'07:28',source:'EARNINGS',
+   headline:'TCS Q4FY24: REVENUE $29.2B (+3.8% USD); DEAL WINS $13.2B TCV — H2 TECH SPEND RECOVERY SIGNALLED',
+   sentiment:'BULL',vol:7.8,tags:['TCS','NIFTYIT','IT','TECHSPEND'],
+   impacts:[{sym:'NIFTYIT',dir:'UP',mag:'HIGH'}],
+   detail:'Net profit ₹12,434Cr (+9% YoY). BFSI +2.1%, Manufacturing +7.4%. CEO: "Early signs of recovery in discretionary spend." Headcount 601,546. Dividend ₹28 + special ₹18.'},
+  {id:'I09',region:'IN',tier:2,time:'07:10',source:'COMMODITY',
+   headline:'BRENT -2.1% ON CEASEFIRE HOPES; IEA RAISES INDIA OIL DEMAND FORECAST 1.1MB/D GROWTH FY25',
+   sentiment:'BULL',vol:6.8,tags:['OIL','CRUDEOIL','CAD','INR','ONGC'],
+   impacts:[{sym:'CRUDEOIL',dir:'DOWN',mag:'HIGH'},{sym:'USDINR',dir:'DOWN',mag:'MED'}],
+   detail:'Every $10/bbl = ~$14B CAD impact annually. INR relief: $2-3 appreciation if sustained below $80. OMC marketing margins improve. Govt fiscal pressure eases on lower LPG subsidy.'},
+  {id:'I10',region:'IN',tier:1,time:'06:30',source:'IPO',
+   headline:'OLA ELECTRIC IPO ₹6,145CR: GMP ₹90, SUBSCRIBED 4.3X DAY 1 — EV SECTOR BELLWETHER LISTING',
+   sentiment:'BULL',vol:7.1,tags:['IPO','EV','AUTO','RETAIL-INV'],
+   impacts:[{sym:'NIFTYAUTO',dir:'UP',mag:'MED'}],
+   detail:'Price band ₹72-76. QIB 4.1x, NII 2.8x, Retail 3.1x. India EV 2W market share 4.1%. FY24 revenue ₹5,243Cr, EBITDA -₹1,584Cr. Anchor: GIC, ADIA, Fidelity allocated.'},
+  {id:'I11',region:'IN',tier:2,time:'06:12',source:'MACRO',
+   headline:'INDIA IIP FEBRUARY +5.7% YOY vs +4.9%E — CAPITAL GOODS +11.9%; PMI MANUFACTURING 59.1 (16-YR HIGH)',
+   sentiment:'BULL',vol:6.2,tags:['IIP','MACRO','GDP','MANUFACTURING'],
+   impacts:[{sym:'NIFTY',dir:'UP',mag:'LOW'},{sym:'NIFTYPSE',dir:'UP',mag:'MED'}],
+   detail:'Consumer durables +10.1%, infra/construction +8.2%, Mining +8.0%, Electricity +7.5%. Consistent with Q4 GDP 8.4%. Investment-led growth confirmed.'},
+  {id:'I12',region:'IN',tier:1,time:'05:55',source:'EARNINGS',
+   headline:'INFOSYS Q4FY24: REVENUE $4.6B (+1.1%); FY25 GUIDANCE 1-3% — CONSERVATIVE; MARGINS STABLE AT 20.1%',
+   sentiment:'MIXED',vol:7.0,tags:['INFY','NIFTYIT','IT','GUIDANCE'],
+   impacts:[{sym:'NIFTYIT',dir:'DOWN',mag:'MED'}],
+   detail:'Net profit ₹7,975Cr. Large deal TCV $4.0B (highest in 6Qs). CEO: "Macro uncertainty persists in BFSI segment." Dividend ₹21/share. FY25 margin guidance 20-22%.'},
+];
+
+// ═══════════════════════════════════════════════════════════════ GLOBAL NEWS
+const GL_NEWS = [
+  {id:'G01',region:'GL',tier:1,time:'08:32',source:'FED',
+   headline:'POWELL: INFLATION PROGRESS INSUFFICIENT FOR RATE CUTS; "HIGHER FOR LONGER" STANCE MAINTAINED Q2',
+   sentiment:'BEAR',vol:9.2,tags:['RATES','USD','BONDS','SPX','EM'],
+   impacts:[{sym:'DXY',dir:'UP',mag:'HIGH'},{sym:'US10Y',dir:'UP',mag:'HIGH'},{sym:'SPX',dir:'DOWN',mag:'MED'},{sym:'XAUUSD',dir:'DOWN',mag:'HIGH'},{sym:'EURUSD',dir:'DOWN',mag:'HIGH'},{sym:'BTC',dir:'DOWN',mag:'MED'}],
+   detail:'PCE at 2.7%, above 2% target. Markets repricing terminal rate higher. June cut probability: 18% per CME FedWatch. EM assets including India face FII outflow headwind. Next FOMC: May 1.'},
+  {id:'G02',region:'GL',tier:1,time:'08:15',source:'ECB',
+   headline:"ECB LANE: JUNE RATE CUT 'VERY LIKELY' IF WAGE DATA CONFIRMS DISINFLATION — EUR/USD +45 PIPS",
+   sentiment:'BULL',vol:7.8,tags:['EUR','ECB','RATES','DAX','BUNDS'],
+   impacts:[{sym:'EURUSD',dir:'UP',mag:'HIGH'},{sym:'DAX',dir:'UP',mag:'MED'},{sym:'DE10Y',dir:'DOWN',mag:'MED'}],
+   detail:'Eurozone CPI 2.4%, within striking distance of target. Core 2.9%. ECB June cut probability: 86% per OIS. Divergence with Fed creates EUR/USD downward pressure medium term.'},
+  {id:'G03',region:'GL',tier:1,time:'07:58',source:'AAPL',
+   headline:'APPLE Q2 EARNINGS: EPS $1.53 vs $1.50E; REV $90.8B vs $90.3BE; $110B BUYBACK ANNOUNCED',
+   sentiment:'BULL',vol:8.9,tags:['AAPL','TECH','NDX','SPX'],
+   impacts:[{sym:'NDX',dir:'UP',mag:'HIGH'},{sym:'SPX',dir:'UP',mag:'MED'}],
+   detail:'Services $23.9B (+14% YoY). iPhone $46.2B. India market key growth driver. Q3 guidance in-line. Shares +4.2% AH. Positive for global tech sentiment, indirect lift for Nifty IT.'},
+  {id:'G04',region:'GL',tier:2,time:'07:44',source:'GEOPO',
+   headline:'IRAN LAUNCHES 300 DRONES/MISSILES ON ISRAEL; RISK-OFF SURGE — CRUDE +3.1%, GOLD +1.8% AT OPEN',
+   sentiment:'RISK-OFF',vol:9.7,tags:['OIL','GOLD','DEFENSE','FOREX','EM'],
+   impacts:[{sym:'XBRUSD',dir:'UP',mag:'HIGH'},{sym:'XAUUSD',dir:'UP',mag:'HIGH'},{sym:'DXY',dir:'UP',mag:'MED'},{sym:'USDINR',dir:'UP',mag:'MED'}],
+   detail:'First direct Iranian attack on Israeli soil. Majority intercepted. IDF on high alert. Crude gap +3.1% — India CAD risk. INR under pressure. Gold safe-haven bid. EM risk premium elevates.'},
+  {id:'G05',region:'GL',tier:1,time:'07:30',source:'BLS',
+   headline:'US NFP +303K vs +214KE; UNEMPLOYMENT 3.8% vs 3.9%E — HOT JOBS DATA KILLS JUNE CUT HOPES',
+   sentiment:'MIXED',vol:8.5,tags:['USD','RATES','NFP','MACRO','EM'],
+   impacts:[{sym:'DXY',dir:'UP',mag:'HIGH'},{sym:'US10Y',dir:'UP',mag:'HIGH'},{sym:'XAUUSD',dir:'DOWN',mag:'MED'},{sym:'SPX',dir:'DOWN',mag:'LOW'}],
+   detail:'Avg hourly earnings +4.1% YoY. Participation 62.7%. June cut probability 55%→18%. Impact on India: FII outflows accelerate, USDINR upward pressure, RBI FX reserves deployed.'},
+  {id:'G06',region:'GL',tier:2,time:'07:12',source:'CHINA',
+   headline:'CHINA PMI MANUFACTURING 50.8 vs 49.5E — FIRST EXPANSION 6 MONTHS; STIMULUS TAKING EFFECT',
+   sentiment:'BULL',vol:6.4,tags:['CHINA','EM','COMMODITIES','HSI','AUD'],
+   impacts:[{sym:'HSI',dir:'UP',mag:'HIGH'},{sym:'XAUUSD',dir:'UP',mag:'LOW'},{sym:'XBRUSD',dir:'UP',mag:'LOW'}],
+   detail:'New export orders 51.3. Caixin PMI confirms 51.1. Rotation of FII flows from India to China a key risk. Positive for metals — Tata Steel, Hindalco indirect beneficiaries.'},
+  {id:'G07',region:'GL',tier:1,time:'06:55',source:'BOJ',
+   headline:'BOJ UEDA: NO PRESET RATE HIKE PATH; YEN INTERVENTION THRESHOLD AT 155 — MOF WARNS URGENCY',
+   sentiment:'BEAR',vol:7.1,tags:['JPY','JGB','NIKKEI','EM-FX'],
+   impacts:[{sym:'USDJPY',dir:'UP',mag:'HIGH'},{sym:'NKY',dir:'UP',mag:'MED'}],
+   detail:'BOJ maintains ultra-accommodative stance. USD/JPY at 151.44, approaching 152 danger zone. Last intervention: Oct 2022. Yen weakness benefits Nifty IT via USD revenue translation.'},
+  {id:'G08',region:'GL',tier:2,time:'06:33',source:'OPEC',
+   headline:'OPEC+ EXTENDS 2.2MB/D VOLUNTARY CUTS THROUGH Q2 2024; SAUDIS MAINTAIN $80 FLOOR',
+   sentiment:'BULL',vol:5.9,tags:['OIL','ENERGY','INFLATION','CAD'],
+   impacts:[{sym:'XBRUSD',dir:'UP',mag:'MED'}],
+   detail:'Vienna decision unanimous. Russia compliance 93%. IEA demand forecast: +1.2mb/d 2024. India: 88% crude imports, $80 floor maintains CAD pressure. Every +$10 = -$14B trade balance.'},
+  {id:'G09',region:'GL',tier:1,time:'06:10',source:'MSFT',
+   headline:'MICROSOFT AZURE +31% YOY; AI WORKLOADS NOW 7PTS OF AZURE GROWTH — COPILOT MONETIZATION ON TRACK',
+   sentiment:'BULL',vol:7.6,tags:['MSFT','TECH','AI','NDX','CLOUD'],
+   impacts:[{sym:'NDX',dir:'UP',mag:'HIGH'},{sym:'SPX',dir:'UP',mag:'MED'}],
+   detail:'Total revenue $61.9B (+17%). CapEx $14B AI infra. Q4 guidance $64-65B. Shares +4.2% AH. Indirect: India IT (TCS/Infosys/Wipro) benefit from client AI spending acceleration.'},
+  {id:'G10',region:'GL',tier:2,time:'05:48',source:'MACRO',
+   headline:'EUROZONE CPI FLASH: +2.4% YOY vs +2.5%E; CORE +2.9% — DISINFLATION ON TRACK FOR ECB JUNE CUT',
+   sentiment:'BULL',vol:6.1,tags:['EUR','ECB','BUNDS','DAX'],
+   impacts:[{sym:'EURUSD',dir:'UP',mag:'MED'},{sym:'DE10Y',dir:'DOWN',mag:'MED'}],
+   detail:'Services 3.7%, still elevated. Energy -0.6% YoY. French CPI +2.3%, German +2.4%. ECB June cut probability 86%. ECB/Fed divergence to weigh on EUR/USD medium-term.'},
+];
+
+// ═══════════════════════════════════════════════════════════════ SECTORS
+const SECTORS = [
+  {name:'NIFTY BANK',     sym:'BANKNIFTY', price:48231.15, chg:0.62,  top:[['HDFC BANK',-0.8],['ICICI BANK',1.2],['SBI',0.9],['KOTAK',0.5],['AXISBANK',0.7]]},
+  {name:'NIFTY IT',       sym:'NIFTYIT',   price:33841.20, chg:-0.34, top:[['TCS',1.4],['INFOSYS',-0.6],['WIPRO',0.3],['HCL TECH',0.8],['TECHM',-0.4]]},
+  {name:'NIFTY AUTO',     sym:'NIFTYAUTO', price:22114.30, chg:1.14,  top:[['TATA MOTORS',2.1],['M&M',1.8],['BAJAJ-AUTO',0.9],['HERO',0.6],['MARUTI',0.4]]},
+  {name:'NIFTY PHARMA',   sym:'NIFTYPHRM', price:19842.60, chg:0.87,  top:[['SUN PHARMA',1.2],['DRREDDY',0.9],['CIPLA',0.6],['DIVI\'S',1.1],['LUPIN',0.8]]},
+  {name:'NIFTY METAL',    sym:'NIFTYMTL',  price:8941.25,  chg:1.43,  top:[['TATA STEEL',2.2],['HINDALCO',1.9],['JSW STEEL',1.6],['SAIL',2.4],['VEDANTA',1.1]]},
+  {name:'NIFTY FMCG',     sym:'NIFTYFMCG', price:54212.10, chg:0.21,  top:[['HUL',0.4],['ITC',0.3],['NESTLE',-0.2],['BRITANNIA',0.5],['GODREJCP',0.1]]},
+  {name:'NIFTY REALTY',   sym:'NIFTYRLT',  price:921.45,   chg:2.11,  top:[['DLF',2.8],['GODREJPROP',2.4],['PRESTIGE',2.1],['LODHA',1.9],['BRIGADE',2.3]]},
+  {name:'NIFTY ENERGY',   sym:'NIFTYNRG',  price:36104.80, chg:-0.44, top:[['RELIANCE',0.6],['ONGC',-1.2],['IOC',-0.8],['BPCL',-0.9],['GAIL',-0.3]]},
+];
+
+// ═══════════════════════════════════════════════════════════════ INDIA ECO
+const IN_ECO = [
+  {date:'MON 03/11',time:'17:30',event:'India WPI Inflation Feb',prev:'0.2%',est:'0.5%',actual:'—',impact:'MED'},
+  {date:'TUE 03/12',time:'11:30',event:'India CPI Inflation Feb',prev:'5.1%',est:'5.0%',actual:'4.85%',impact:'HIGH'},
+  {date:'TUE 03/12',time:'17:30',event:'India IIP Feb YoY',prev:'3.8%',est:'4.9%',actual:'5.7%',impact:'HIGH'},
+  {date:'WED 03/13',time:'12:00',event:'RBI MPC Minutes Release',prev:'—',est:'—',actual:'—',impact:'HIGH'},
+  {date:'WED 03/13',time:'17:00',event:'India Forex Reserves Weekly',prev:'$642.5B',est:'$643B',actual:'—',impact:'MED'},
+  {date:'THU 03/14',time:'09:15',event:'NSE F&O Weekly Expiry',prev:'—',est:'—',actual:'—',impact:'HIGH'},
+  {date:'THU 03/14',time:'17:30',event:'India Trade Deficit Feb',prev:'-$18.7B',est:'-$17.5B',actual:'—',impact:'MED'},
+  {date:'FRI 03/15',time:'16:00',event:'BSE Sensex Rebalancing',prev:'—',est:'—',actual:'—',impact:'LOW'},
+  {date:'MON 03/18',time:'11:00',event:'SEBI Board Meeting',prev:'—',est:'—',actual:'—',impact:'HIGH'},
+  {date:'TUE 03/19',time:'17:30',event:'India FDI Inflows Q3',prev:'$16.2B',est:'$15.0B',actual:'—',impact:'MED'},
+  {date:'WED 03/20',time:'12:00',event:'RBI Governor Speech (CII)',prev:'—',est:'—',actual:'—',impact:'HIGH'},
+  {date:'THU 03/21',time:'17:30',event:'India PMI Manufacturing Flash',prev:'59.1',est:'58.5',actual:'—',impact:'MED'},
+];
+
+// ═══════════════════════════════════════════════════════════════ GLOBAL ECO
+const GL_ECO = [
+  {date:'MON 03/11',time:'21:30',country:'US',event:'CPI YoY',prev:'3.2%',est:'3.1%',actual:'—',impact:'HIGH'},
+  {date:'MON 03/11',time:'21:30',country:'US',event:'CPI Core MoM',prev:'0.4%',est:'0.3%',actual:'—',impact:'HIGH'},
+  {date:'TUE 03/12',time:'19:00',country:'US',event:'Federal Budget Balance',prev:'-$22B',est:'-$260B',actual:'—',impact:'LOW'},
+  {date:'WED 03/13',time:'21:30',country:'US',event:'PPI MoM',prev:'0.3%',est:'0.3%',actual:'—',impact:'MED'},
+  {date:'WED 03/13',time:'21:30',country:'US',event:'Initial Jobless Claims',prev:'217K',est:'218K',actual:'—',impact:'MED'},
+  {date:'THU 03/14',time:'21:30',country:'US',event:'Retail Sales MoM',prev:'0.6%',est:'0.8%',actual:'—',impact:'HIGH'},
+  {date:'FRI 03/15',time:'09:30',country:'EU',event:'ECB Lagarde Speech',prev:'—',est:'—',actual:'—',impact:'HIGH'},
+  {date:'FRI 03/15',time:'12:30',country:'UK',event:'GDP MoM',prev:'0.2%',est:'0.1%',actual:'—',impact:'HIGH'},
+  {date:'FRI 03/15',time:'09:00',country:'EU',event:'Industrial Production',prev:'-3.2%',est:'-1.5%',actual:'—',impact:'MED'},
+  {date:'MON 03/18',time:'—',    country:'US',event:'Fed Blackout Period Ends',prev:'—',est:'—',actual:'—',impact:'MED'},
+  {date:'WED 03/20',time:'23:30',country:'JP',event:'BOJ Rate Decision',prev:'-0.1%',est:'0.0%',actual:'—',impact:'HIGH'},
+  {date:'FRI 03/22',time:'21:30',country:'US',event:'PCE Deflator YoY',prev:'2.4%',est:'2.5%',actual:'—',impact:'HIGH'},
+];
+
+// ═══════════════════════════════════════════════════════════════ IPO DATA
+const IPO_DATA = {
+  active:[
+    {name:'OLA ELECTRIC',size:'₹6,145Cr',band:'₹72-76',open:'MAY 22-24',gmp:'+₹90 (118%)',sub:'4.3x D1',sector:'EV/AUTO',rating:'★★★★'},
+    {name:'AADHAR HOUSING',size:'₹3,000Cr',band:'₹300-315',open:'MAY 08-10',gmp:'+₹45 (114%)',sub:'25.5x',sector:'FINANCE',rating:'★★★'},
+    {name:'INDEGENE LTD',size:'₹1,841Cr',band:'₹430-452',open:'MAY 06-08',gmp:'+₹85 (119%)',sub:'68.7x',sector:'HEALTHCARE',rating:'★★★★'},
+  ],
+  upcoming:[
+    {name:'BAJAJ HOUSING FIN',size:'₹7,000Cr',band:'TBD',open:'SEP 2024',gmp:'TBD',sub:'—',sector:'FINANCE',rating:'★★★★'},
+    {name:'SWIGGY',size:'₹10,414Cr',band:'TBD',open:'OCT 2024',gmp:'TBD',sub:'—',sector:'TECH/FOOD',rating:'★★★'},
+    {name:'HYUNDAI INDIA',size:'₹25,000Cr',band:'TBD',open:'OCT 2024',gmp:'TBD',sub:'—',sector:'AUTO',rating:'★★★★'},
+    {name:'NTPC GREEN ENERGY',size:'₹10,000Cr',band:'TBD',open:'NOV 2024',gmp:'TBD',sub:'—',sector:'ENERGY',rating:'★★★★'},
+  ],
+  recent:[
+    {name:'JYOTI CNC AUTO',list:'₹380',cmp:'₹524',gain:'+37.9%',date:'JAN 16'},
+    {name:'MEDI ASSIST',list:'₹418',cmp:'₹511',gain:'+22.2%',date:'FEB 01'},
+    {name:'JANA SMALL FIN',list:'₹396',cmp:'₹441',gain:'+11.4%',date:'FEB 14'},
+    {name:'VIBHOR STEEL',list:'₹151',cmp:'₹328',gain:'+117.2%',date:'FEB 26'},
+    {name:'RK INFRA',list:'₹541',cmp:'₹618',gain:'+14.2%',date:'MAR 22'},
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════ STATE
+let inMkt = IN_MKTS.map(m=>({...m}));
+let glMkt = GL_MKTS.map(m=>({...m}));
+let allNews = [...IN_NEWS,...GL_NEWS].sort((a,b)=>b.vol-a.vol);
+let selectedNews = allNews[0];
+let currentFeed = 'in';
+let currentRT = 'in';
+let currentView = 'top';
+let currentEco = 'in';
+let cmdHistory = [], histIdx = -1, blinkOn = true, tickOff = 0;
+
+// ═══════════════════════════════════════════════════════════════ HELPERS
+function fmtP(sym,p){
+  if(['USDINR','EURINR','GBPINR'].includes(sym)) return p.toFixed(2);
+  if(['GSEC10Y','GSEC5Y','US10Y','DE10Y','UK10Y','JP10Y'].includes(sym)) return p.toFixed(3)+'%';
+  if(['EURUSD','GBPUSD','USDCNH'].includes(sym)) return p.toFixed(4);
+  if(p>10000) return p.toLocaleString('en-IN',{maximumFractionDigits:2});
+  return p.toFixed(2);
+}
+function fmtC(c){ return (c>=0?'+':'')+c.toFixed(2)+'%'; }
+function cc(c){ return c>=0?G:R; }
+function sc(s){ if(s==='BULL')return G; if(s==='BEAR')return R; if(s==='RISK-OFF')return O; return C; }
+function tc(t){ return t===1?A:C; }
+function vc(v){ return v>=8.5?R:v>=7?A:G; }
+function dc(d){ return d==='UP'?G:d==='DOWN'?R:C; }
+function mc(m){ return m==='HIGH'?R:m==='MED'?A:G; }
+
+// ═══════════════════════════════════════════════════════════════ FEED RENDER
+function getFeedNews(){
+  if(currentFeed==='in') return IN_NEWS;
+  if(currentFeed==='gl') return GL_NEWS;
+  return allNews;
+}
+
+function renderNews(){
+  const feed = getFeedNews();
+  document.getElementById('news-count').textContent=feed.length+' ITEMS';
+  document.getElementById('news-list').innerHTML=feed.map((n,i)=>{
+    const hl=n.headline.length>68?n.headline.slice(0,68)+'…':n.headline;
+    const sel=selectedNews&&selectedNews.id===n.id;
+    const badge=n.region==='IN'
+      ?`<span class="badge-in">IN</span>`
+      :`<span class="badge-gl">GL</span>`;
+    return `<div class="news-item${sel?' sel':''}" onclick="selNews('${n.id}')">
+      <div class="nr1">
+        <span class="nn">${String(i+1).padStart(2,'0')}</span>
+        <span class="nt" style="color:${tc(n.tier)}">T${n.tier}</span>
+        <span class="ntm">${n.time}</span>
+        <span class="ns">[${n.source}]</span>
+        ${badge}
+        <span class="nh" style="margin-left:4px">${hl}</span>
+      </div>
+      <div class="nr2">
+        <span class="nse" style="color:${sc(n.sentiment)}">■ ${n.sentiment}</span>
+        <span class="nvo" style="color:${vc(n.vol)}">VOL:${n.vol.toFixed(1)}</span>
+        ${n.tags.map(t=>`<span class="ntg">[${t}]</span>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function selNews(id){
+  const feed=getFeedNews();
+  const found=allNews.find(n=>n.id===id);
+  if(found){ selectedNews=found; renderNews(); renderDetail(); }
+  const idx=feed.findIndex(n=>n.id===id);
+  document.getElementById('detail-ref').textContent=idx>=0?`N${idx+1} <GO>`:'';
+}
+
+function switchFeed(f){
+  currentFeed=f;
+  ['in','gl','all'].forEach(x=>{
+    const el=document.getElementById('tab-'+x);
+    if(el) el.classList.toggle('active',x===f);
+  });
+  const titles={'in':'INDIA MARKET INTELLIGENCE — VOLATILITY RANKED','gl':'GLOBAL MARKET INTELLIGENCE — VOLATILITY RANKED','all':'ALL FEEDS COMBINED — VOLATILITY RANKED'};
+  document.getElementById('feed-title').textContent=titles[f]||titles.all;
+  renderNews();
+}
+
+function renderDetail(){
+  const n=selectedNews; if(!n) return;
+  const regionTag=n.region==='IN'
+    ?`<span class="badge-in" style="font-size:9px">INDIA</span>`
+    :`<span class="badge-gl" style="font-size:9px">GLOBAL</span>`;
+  document.getElementById('detail-body').innerHTML=`
+    <div class="dm">${n.time} | SRC:${n.source} | TIER:${n.tier} | ID:${n.id} ${regionTag}</div>
+    <div class="dh">${n.headline}</div>
+    <div class="ds"><div class="dst">▶ ANALYSIS</div><div class="dtx">${n.detail}</div></div>
+    <div class="ds">
+      <div class="dst">▶ MARKET IMPACTS</div>
+      <table class="itbl">
+        <thead><tr><td>ASSET</td><td>DIR</td><td>MAG</td></tr></thead>
+        <tbody>${n.impacts.map(i=>`<tr>
+          <td style="color:${A};font-weight:bold">${i.sym}</td>
+          <td style="color:${dc(i.dir)}">▲ ${i.dir}</td>
+          <td style="color:${mc(i.mag)}">${i.mag}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>
+    <div class="ds">
+      <div class="dst">▶ CURATION SCORE</div>
+      <div class="sgrid">
+        <div class="sc"><div class="scl">SENTIMENT</div><div class="scv" style="color:${sc(n.sentiment)}">${n.sentiment}</div></div>
+        <div class="sc"><div class="scl">VOL.POTENTIAL</div><div class="scv" style="color:${vc(n.vol)}">${n.vol.toFixed(1)}/10</div></div>
+        <div class="sc"><div class="scl">TIER</div><div class="scv" style="color:${tc(n.tier)}">${n.tier===1?'DIRECT':'INDIRECT'}</div></div>
+        <div class="sc"><div class="scl">MARKET SCOPE</div><div class="scv" style="color:${C}">${n.tags.length} MKTS</div></div>
+      </div>
+    </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ RIGHT PANEL
+function getRTData(){
+  if(currentRT==='in') return inMkt.filter(m=>m.cat==='IN-IDX'||m.cat==='IN-SEC');
+  if(currentRT==='fx') return [...inMkt.filter(m=>['IN-FX','IN-BOND','IN-COMDTY'].includes(m.cat)),...glMkt.filter(m=>['GL-FX','GL-COMDTY','GL-CRYPTO'].includes(m.cat))];
+  return glMkt.filter(m=>m.cat==='GL-EQ'||m.cat==='GL-RATES');
+}
+
+function renderMktList(){
+  const data=getRTData();
+  document.getElementById('mkt-list').innerHTML=data.map(m=>`
+    <div class="mr" id="mr-${m.sym}">
+      <div><div class="ms">${m.sym}</div><div class="mn">${m.name.slice(0,10)}</div></div>
+      <div><div class="mp">${fmtP(m.sym,m.price)}</div><div class="mc" style="color:${cc(m.chg)}">${fmtC(m.chg)}</div></div>
+    </div>`).join('');
+
+  if(currentRT==='in'){
+    document.getElementById('risk-panel').innerHTML=`
+      <div class="rpt">INDIA RISK DASHBOARD</div>
+      <div class="rpr"><span style="color:${D}">FII FLOW</span><span id="fii-f" style="color:${R}">OUTFLOW</span></div>
+      <div class="rpr"><span style="color:${D}">DII FLOW</span><span style="color:${G}">INFLOW</span></div>
+      <div class="rpr"><span style="color:${D}">INR REGIME</span><span style="color:${A}">MANAGED</span></div>
+      <div class="rpr"><span style="color:${D}">CPI</span><span style="color:${A}">4.85%</span></div>
+      <div class="rpr"><span style="color:${D}">GDP FY24</span><span style="color:${G}">8.4% Q3</span></div>
+      <div class="rpr"><span style="color:${D}">CAD</span><span style="color:${G}">-1.2% GDP</span></div>
+      <div class="rpr"><span style="color:${D}">FX RES</span><span style="color:${G}">$643B</span></div>`;
+  } else if(currentRT==='gl'){
+    document.getElementById('risk-panel').innerHTML=`
+      <div class="rpt">GLOBAL RISK GAUGE</div>
+      <div class="rpr"><span style="color:${D}">FEAR/GREED</span><span style="color:${G}">GREED 62</span></div>
+      <div class="rpr"><span style="color:${D}">VIX REGIME</span><span style="color:${G}">LOW 14.3</span></div>
+      <div class="rpr"><span style="color:${D}">USD</span><span style="color:${R}">BULLISH</span></div>
+      <div class="rpr"><span style="color:${D}">RATES RISK</span><span style="color:${R}">HAWKISH</span></div>
+      <div class="rpr"><span style="color:${D}">GEO RISK</span><span style="color:${A}">ELEVATED</span></div>
+      <div class="rpr"><span style="color:${D}">EM FLOW</span><span style="color:${R}">OUTFLOW</span></div>
+      <div class="rpr"><span style="color:${D}">CREDIT</span><span style="color:${G}">STABLE</span></div>`;
+  } else {
+    document.getElementById('risk-panel').innerHTML=`
+      <div class="rpt">FX + COMDTY</div>
+      <div class="rpr"><span style="color:${D}">DXY</span><span style="color:${R}">BULL 104</span></div>
+      <div class="rpr"><span style="color:${D}">BRENT</span><span style="color:${A}">$82 RISK</span></div>
+      <div class="rpr"><span style="color:${D}">GOLD</span><span style="color:${G}">SAFE-HVN</span></div>
+      <div class="rpr"><span style="color:${D}">BTC</span><span style="color:${G}">BULL</span></div>
+      <div class="rpr"><span style="color:${D}">INR</span><span style="color:${A}">83.42 MGD</span></div>`;
+  }
+}
+
+function switchRT(t){
+  currentRT=t;
+  ['in','fx','gl'].forEach(x=>{
+    const el=document.getElementById('rt-'+x); if(el) el.classList.toggle('active',x===t);
+  });
+  renderMktList();
+}
+
+// ═══════════════════════════════════════════════════════════════ IN MKT VIEW
+function renderInMkt(){
+  const groups=[
+    {label:'NSE/BSE INDICES',cats:['IN-IDX']},
+    {label:'NSE SECTORAL IDX',cats:['IN-SEC']},
+    {label:'INDIA FOREX & BONDS',cats:['IN-FX','IN-BOND']},
+    {label:'MCX COMMODITIES',cats:['IN-COMDTY']},
+  ];
+  document.getElementById('in-mkt-grid').innerHTML=groups.map(g=>{
+    const items=inMkt.filter(m=>g.cats.includes(m.cat));
+    return `<div class="mkt-card">
+      <div class="mkt-card-hdr">◼ ${g.label}</div>
+      <table class="mft">
+        <thead><tr><td>SYM</td><td>NAME</td><td style="text-align:right">PRICE</td><td style="text-align:right">CHG%</td><td style="text-align:right">VOL</td></tr></thead>
+        <tbody>${items.map(m=>`<tr id="mft-${m.sym}">
+          <td style="color:${A};font-weight:bold">${m.sym}</td>
+          <td style="color:${D};font-size:10px">${m.name}</td>
+          <td style="text-align:right;color:${W}">${fmtP(m.sym,m.price)}</td>
+          <td style="text-align:right;color:${cc(m.chg)};font-weight:bold">${fmtC(m.chg)}</td>
+          <td style="text-align:right;color:${D};font-size:9px">${m.vol}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════ GL MKT VIEW
+function renderGlMkt(){
+  const groups=[
+    {label:'GLOBAL EQUITIES',cats:['GL-EQ']},
+    {label:'FOREX MAJORS',cats:['GL-FX']},
+    {label:'COMMODITIES',cats:['GL-COMDTY']},
+    {label:'CRYPTO + RATES',cats:['GL-CRYPTO','GL-RATES']},
+  ];
+  document.getElementById('gl-mkt-grid').innerHTML=groups.map(g=>{
+    const items=glMkt.filter(m=>g.cats.includes(m.cat));
+    return `<div class="mkt-card">
+      <div class="mkt-card-hdr">◼ ${g.label}</div>
+      <table class="mft">
+        <thead><tr><td>SYM</td><td>NAME</td><td style="text-align:right">PRICE</td><td style="text-align:right">CHG%</td><td style="text-align:right">VOL</td></tr></thead>
+        <tbody>${items.map(m=>`<tr id="mft-${m.sym}">
+          <td style="color:${A};font-weight:bold">${m.sym}</td>
+          <td style="color:${D};font-size:10px">${m.name}</td>
+          <td style="text-align:right;color:${W}">${fmtP(m.sym,m.price)}</td>
+          <td style="text-align:right;color:${cc(m.chg)};font-weight:bold">${fmtC(m.chg)}</td>
+          <td style="text-align:right;color:${D};font-size:9px">${m.vol}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════ SECTORS
+function renderSectors(){
+  document.getElementById('sec-grid').innerHTML=SECTORS.map(s=>`
+    <div class="sec-card">
+      <div class="sec-hdr">
+        <span>◼ ${s.name}</span>
+        <span style="color:${cc(s.chg)};font-weight:bold">${s.price.toLocaleString('en-IN',{maximumFractionDigits:2})}  ${fmtC(s.chg)}</span>
+      </div>
+      <table class="sect">
+        <thead><tr><td style="color:${C};padding:2px 8px;font-size:10px">CONSTITUENT</td><td style="color:${C};padding:2px 8px;font-size:10px;text-align:right">CHG%</td><td style="color:${C};padding:2px 8px;font-size:10px;text-align:right">SIGNAL</td></tr></thead>
+        <tbody>${s.top.map(([name,chg])=>`<tr>
+          <td style="padding:2px 8px;color:${W}">${name}</td>
+          <td style="padding:2px 8px;text-align:right;color:${cc(chg)};font-weight:bold">${fmtC(chg)}</td>
+          <td style="padding:2px 8px;text-align:right;color:${chg>=0?G:R}">${chg>=0?'▲ BUY':'▼ SELL'}</td>
+        </tr>`).join('')}</tbody>
+      </table>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════════════════════════════════ ECO
+function switchEco(mode){
+  currentEco=mode;
+  ['in','gl'].forEach(x=>{const el=document.getElementById('eco-tab-'+x);if(el)el.classList.toggle('active',x===mode);});
+  renderEco();
+}
+
+function renderEco(){
+  const isIn=currentEco==='in';
+  document.getElementById('eco-title').textContent=isIn?'INDIA EVENTS (IST)':'GLOBAL EVENTS (IST)';
+  if(isIn){
+    document.getElementById('eco-thead').innerHTML='<td>DATE</td><td>TIME IST</td><td>EVENT</td><td>PREVIOUS</td><td>ESTIMATE</td><td>ACTUAL</td><td>IMPACT</td>';
+    document.getElementById('eco-body').innerHTML=IN_ECO.map(e=>{
+      const ic=e.impact==='HIGH'?R:e.impact==='MED'?A:D;
+      return `<tr>
+        <td style="color:${D}">${e.date}</td><td style="color:${W}">${e.time}</td>
+        <td style="color:${W}">${e.event}</td><td style="color:${D}">${e.prev}</td>
+        <td style="color:${C}">${e.est}</td>
+        <td style="color:${e.actual!=='—'?G:D};font-weight:${e.actual!=='—'?'bold':'normal'}">${e.actual}</td>
+        <td style="color:${ic};font-weight:bold">${e.impact}</td>
+      </tr>`;
+    }).join('');
+  } else {
+    document.getElementById('eco-thead').innerHTML='<td>DATE</td><td>TIME IST</td><td>CTRY</td><td>EVENT</td><td>PREV</td><td>ESTIMATE</td><td>ACTUAL</td><td>IMPACT</td>';
+    document.getElementById('eco-body').innerHTML=GL_ECO.map(e=>{
+      const ic=e.impact==='HIGH'?R:e.impact==='MED'?A:D;
+      return `<tr>
+        <td style="color:${D}">${e.date}</td><td style="color:${W}">${e.time}</td>
+        <td style="color:${A};font-weight:bold">${e.country}</td>
+        <td style="color:${W}">${e.event}</td><td style="color:${D}">${e.prev}</td>
+        <td style="color:${C}">${e.est}</td>
+        <td style="color:${e.actual!=='—'?G:D};font-weight:${e.actual!=='—'?'bold':'normal'}">${e.actual}</td>
+        <td style="color:${ic};font-weight:bold">${e.impact}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════ RBI VIEW
+function renderRBI(){
+  document.getElementById('rbi-content').innerHTML=`
+  <div class="rbi-grid">
+    <div class="rbi-card">
+      <div class="rbi-card-hdr">◼ CURRENT POLICY RATES</div>
+      ${[['REPO RATE','6.50%',A],['SDF (FLOOR)','6.25%',W],['MSF (CEILING)','6.75%',W],['CRR','4.50%',W],['SLR','18.00%',W],['STANCE','WITHDRAWAL',C]].map(([l,v,c])=>`<div class="rbi-row"><span style="color:${D}">${l}</span><span style="color:${c};font-weight:bold">${v}</span></div>`).join('')}
+    </div>
+    <div class="rbi-card">
+      <div class="rbi-card-hdr">◼ RBI FY25 PROJECTIONS</div>
+      ${[['GDP GROWTH','7.0%',G],['CPI (ANNUAL)','4.5%',A],['Q1 CPI','4.9%',W],['Q2 CPI','3.8%',G],['Q3 CPI','4.6%',W],['Q4 CPI','4.7%',W]].map(([l,v,c])=>`<div class="rbi-row"><span style="color:${D}">${l}</span><span style="color:${c};font-weight:bold">${v}</span></div>`).join('')}
+    </div>
+  </div>
+  <div class="rbi-card" style="margin-bottom:10px">
+    <div class="rbi-card-hdr">◼ MPC DECISION HISTORY — RATE CYCLE</div>
+    <table style="width:100%;border-collapse:collapse;font-size:11px">
+      <thead><tr>${['DATE','DECISION','RATE','STANCE','VOTE'].map(h=>`<td style="padding:2px 8px;color:${C}">${h}</td>`).join('')}</tr></thead>
+      <tbody>
+        ${[['Apr 2024','HOLD',A,'Withdrawal','5-1'],['Feb 2024','HOLD',A,'Withdrawal','5-1'],['Dec 2023','HOLD',A,'Withdrawal','5-1'],['Oct 2023','HOLD',A,'Withdrawal','5-1'],['Aug 2023','HOLD',A,'Withdrawal','5-1'],['Feb 2023','HIKE +25',R,'Withdrawal','4-2'],['Dec 2022','HIKE +35',R,'Withdrawal','6-0'],['Sep 2022','HIKE +50',R,'Withdrawal','5-1']].map(([d,dec,c,st,v])=>`<tr style="border-top:1px solid #0D0D0D">
+          <td style="padding:2px 8px;color:${A}">${d}</td><td style="padding:2px 8px;color:${c};font-weight:bold">${dec}</td>
+          <td style="padding:2px 8px;color:${W}">6.50%</td><td style="padding:2px 8px;color:${D}">${st}</td>
+          <td style="padding:2px 8px;color:${W}">${v}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    <div class="rbi-card">
+      <div class="rbi-card-hdr">◼ UPCOMING MPC DATES FY25</div>
+      ${[['JUN 5-7, 2024',C,'NEXT MEETING'],['AUG 6-8, 2024',D,'TBD'],['OCT 7-9, 2024',D,'TBD'],['DEC 4-6, 2024',D,'TBD']].map(([d,c,tag])=>`<div class="rbi-row"><span style="color:${c}">${d}</span><span style="color:${c}">${tag}</span></div>`).join('')}
+    </div>
+    <div class="rbi-card">
+      <div class="rbi-card-hdr">◼ RATE CUT PROBABILITY (OIS MARKET)</div>
+      ${[['JUN 2024 CUT','12%',R],['AUG 2024 CUT','38%',A],['OCT 2024 CUT','61%',A],['DEC 2024 CUT','78%',G],['TOTAL FY25','25-50bps',G]].map(([l,v,c])=>`<div class="rbi-row"><span style="color:${D}">${l}</span><span style="color:${c};font-weight:bold">${v}</span></div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ IPO VIEW
+function renderIPO(){
+  const {active,upcoming,recent}=IPO_DATA;
+  document.getElementById('ipo-content').innerHTML=`
+  <div style="margin-bottom:10px">
+    <div class="vtitle" style="font-size:10px;margin-bottom:4px">● ACTIVE / OPEN IPOs</div>
+    <table class="ipo-t">
+      <thead><tr>${['COMPANY','SIZE','PRICE BAND','OPEN DATES','GMP','SUBS','SECTOR','RATING'].map(h=>`<td>${h}</td>`).join('')}</tr></thead>
+      <tbody>${active.map(i=>`<tr>
+        <td style="color:${A};font-weight:bold">${i.name}</td>
+        <td style="color:${W}">${i.size}</td><td style="color:${C}">${i.band}</td>
+        <td style="color:${D}">${i.open}</td><td style="color:${G};font-weight:bold">${i.gmp}</td>
+        <td style="color:${A}">${i.sub}</td><td style="color:${D}">${i.sector}</td>
+        <td style="color:${G}">${i.rating}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>
+  <div style="margin-bottom:10px">
+    <div class="vtitle" style="font-size:10px;margin-bottom:4px">● UPCOMING IPOs — PIPELINE FY25</div>
+    <table class="ipo-t">
+      <thead><tr>${['COMPANY','SIZE','EST. OPEN','SECTOR','RATING'].map(h=>`<td>${h}</td>`).join('')}</tr></thead>
+      <tbody>${upcoming.map(i=>`<tr>
+        <td style="color:${A};font-weight:bold">${i.name}</td>
+        <td style="color:${W}">${i.size}</td><td style="color:${C}">${i.open}</td>
+        <td style="color:${D}">${i.sector}</td><td style="color:${G}">${i.rating}</td>
+      </tr>`).join('')}</tbody>
+    </table>
+  </div>
+  <div>
+    <div class="vtitle" style="font-size:10px;margin-bottom:4px">● RECENT LISTINGS — PERFORMANCE</div>
+    <table class="ipo-t">
+      <thead><tr>${['COMPANY','LIST PRICE','CMP','GAIN/LOSS','LIST DATE'].map(h=>`<td>${h}</td>`).join('')}</tr></thead>
+      <tbody>${recent.map(i=>{
+        const pos=i.gain.startsWith('+');
+        return `<tr>
+          <td style="color:${A};font-weight:bold">${i.name}</td>
+          <td style="color:${D}">${i.list}</td><td style="color:${W}">${i.cmp}</td>
+          <td style="color:${pos?G:R};font-weight:bold">${i.gain}</td>
+          <td style="color:${D}">${i.date}</td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ FX VIEW
+function renderFX(){
+  document.getElementById('fx-content').innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+    <div class="mkt-card">
+      <div class="mkt-card-hdr">◼ INR CROSSES</div>
+      <table class="mft"><thead><tr><td>PAIR</td><td style="text-align:right">RATE</td><td style="text-align:right">CHG%</td></tr></thead>
+      <tbody>${inMkt.filter(m=>m.cat==='IN-FX').map(m=>`<tr>
+        <td style="color:${A};font-weight:bold">${m.sym}</td>
+        <td style="text-align:right;color:${W}">${fmtP(m.sym,m.price)}</td>
+        <td style="text-align:right;color:${cc(m.chg)};font-weight:bold">${fmtC(m.chg)}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-card-hdr">◼ GLOBAL FX MAJORS</div>
+      <table class="mft"><thead><tr><td>PAIR</td><td style="text-align:right">RATE</td><td style="text-align:right">CHG%</td></tr></thead>
+      <tbody>${glMkt.filter(m=>m.cat==='GL-FX').map(m=>`<tr>
+        <td style="color:${A};font-weight:bold">${m.sym}</td>
+        <td style="text-align:right;color:${W}">${fmtP(m.sym,m.price)}</td>
+        <td style="text-align:right;color:${cc(m.chg)};font-weight:bold">${fmtC(m.chg)}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>
+    <div class="mkt-card">
+      <div class="mkt-card-hdr">◼ SOVEREIGN BONDS (10Y)</div>
+      <table class="mft"><thead><tr><td>BOND</td><td style="text-align:right">YIELD</td><td style="text-align:right">CHG</td></tr></thead>
+      <tbody>${[...inMkt.filter(m=>m.cat==='IN-BOND'),...glMkt.filter(m=>m.cat==='GL-RATES')].map(m=>`<tr>
+        <td style="color:${A};font-weight:bold">${m.sym}</td>
+        <td style="text-align:right;color:${W}">${fmtP(m.sym,m.price)}</td>
+        <td style="text-align:right;color:${cc(m.chg)};font-weight:bold">${fmtC(m.chg)}</td>
+      </tr>`).join('')}</tbody></table>
+    </div>
+  </div>
+  <div class="mkt-card" style="margin-bottom:8px">
+    <div class="mkt-card-hdr">◼ RBI FX INTERVENTIONS + INR LEVELS</div>
+    <div style="padding:6px 8px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+      ${[['RBI INTERVENTION','ACTIVE SELLING USD','DEFEND 83.50',R],['FX RESERVES','$643.16B','↑ +$0.7B WoW',G],['USDINR RANGE','83.00 — 83.80','30D BAND',A],['CAD Q3 FY24','-1.2% OF GDP','COMFORTABLE',G]].map(([l,v,s,c])=>`
+        <div style="background:#0A0A00;padding:4px 6px;border:1px solid var(--bd)">
+          <div style="color:${D};font-size:9px">${l}</div>
+          <div style="color:${c};font-weight:bold">${v}</div>
+          <div style="color:${D};font-size:9px">${s}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ GEO VIEW
+function renderGEO(){
+  const geos=[
+    {region:'MIDDLE EAST',risk:'CRITICAL',detail:'Iran-Israel direct conflict. Oil risk premium +$5-8/bbl. India: crude CAD impact. Safe haven flows to USD, gold.',color:R,impact:'USDINR ▲  CRUDEOIL ▲  GOLDMCX ▲'},
+    {region:'RUSSIA-UKRAINE',risk:'HIGH',detail:'War continues. EU energy security risk. India strategic oil imports from Russia (~40% of imports at discount). Wheat/fertilizer supply disruption.',color:R,impact:'CRUDEOIL ▲  WHEATMCX ▲  EURUSD ▼'},
+    {region:'TAIWAN STRAIT',risk:'ELEVATED',detail:'China military exercises. Semiconductor supply chain risk. Tata Electronics, Dixon Tech, India PLI beneficiaries if supply shifts.',color:A,impact:'NIFTYIT ▲  NDTV500 ▼  TECHM ▲'},
+    {region:'SOUTH CHINA SEA',risk:'ELEVATED',detail:'Philippines/China standoff. ASEAN trade route risk. India EXIM diversification play. Adani Ports, JNPT traffic implications.',color:A,impact:'ADANIPORTS ▼  SHIPPING ▼'},
+    {region:'PAKISTAN BORDER',risk:'LOW',detail:'Stable. India defence capex continues. HAL, BEL, DRDO listed plays. Defence ETF performance strong.',color:G,impact:'HAL ▲  BEL ▲  BHEL ▲'},
+    {region:'US-CHINA TRADE',risk:'ELEVATED',detail:'Tariff escalation. India benefits from China+1 strategy. Apple manufacturing shift. Samsung, Foxconn India expansion.',color:A,impact:'NIFTYIT ▲  DIXONTEC ▲  TATAAUTO ▲'},
+  ];
+  document.getElementById('geo-content').innerHTML=`
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    ${geos.map(g=>`<div class="mkt-card">
+      <div class="mkt-card-hdr" style="display:flex;justify-content:space-between">
+        <span>◼ ${g.region}</span>
+        <span style="color:${g.color};font-weight:bold">RISK: ${g.risk}</span>
+      </div>
+      <div style="padding:4px 8px">
+        <div style="color:${W};line-height:1.6;margin-bottom:4px">${g.detail}</div>
+        <div style="color:${A};font-size:10px">IMPACT: ${g.impact}</div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ FED/CB VIEW
+function renderFED(){
+  document.getElementById('fed-content').innerHTML=`
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:10px">
+    ${[
+      {bank:'FED',country:'US',rate:'5.25-5.50%',stance:'HAWKISH',next:'MAY 1',cut:'18% JUN',color:R},
+      {bank:'ECB',country:'EU',rate:'4.50%',stance:'DOVISH',next:'JUN 6',cut:'86% JUN',color:G},
+      {bank:'BOJ',country:'JP',rate:'-0.10%',stance:'NEUTRAL',next:'MAR 19',cut:'HIKE RISK',color:A},
+      {bank:'BOE',country:'UK',rate:'5.25%',stance:'NEUTRAL',next:'MAY 9',cut:'65% JUN',color:A},
+      {bank:'RBI',country:'IN',rate:'6.50%',stance:'NEUTRAL',next:'JUN 5-7',cut:'38% AUG',color:C},
+    ].map(b=>`<div class="mkt-card">
+      <div class="mkt-card-hdr" style="color:${b.color}">◼ ${b.bank} (${b.country})</div>
+      <div style="padding:4px 6px">
+        <div style="display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px solid #0D0D0D"><span style="color:${D};font-size:10px">RATE</span><span style="color:${W};font-weight:bold">${b.rate}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px solid #0D0D0D"><span style="color:${D};font-size:10px">STANCE</span><span style="color:${b.color};font-weight:bold">${b.stance}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:1px 0;border-bottom:1px solid #0D0D0D"><span style="color:${D};font-size:10px">NEXT MTG</span><span style="color:${A}">${b.next}</span></div>
+        <div style="display:flex;justify-content:space-between;padding:1px 0"><span style="color:${D};font-size:10px">CUT PROB</span><span style="color:${C}">${b.cut}</span></div>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div class="mkt-card" style="margin-bottom:8px">
+    <div class="mkt-card-hdr">◼ GLOBAL RATE CYCLE — INDIA IMPACT MATRIX</div>
+    <table class="mft">
+      <thead><tr><td>CB EVENT</td><td>USDINR</td><td>NIFTY</td><td>BONDS</td><td>FII FLOW</td><td>IMPACT LEVEL</td></tr></thead>
+      <tbody>
+        ${[
+          ['Fed 25bps CUT','▼ BULL','▲ BULL','▼ YIELDS DN','INFLOW +',G,'HIGH'],
+          ['Fed 25bps HIKE','▲ BEAR','▼ BEAR','▲ YIELDS UP','OUTFLOW -',R,'HIGH'],
+          ['ECB CUT (Jun)','NEUTRAL','▲ MILD','NEUTRAL','MILD +',A,'MED'],
+          ['BOJ HIKE / YEN RALLY','▼ MILD','▼ MILD','NEUTRAL','CARRY UNWIND',A,'MED'],
+          ['RBI CUT 25bps','▲ MILD','▲ BULL','▼ YIELDS DN','NEUTRAL',G,'HIGH'],
+          ['RBI HIKE (surprise)','▼ BULL','▼ BEAR','▲ YIELDS UP','OUTFLOW -',R,'HIGH'],
+        ].map(([ev,inr,nf,bd,fii,c,imp])=>`<tr style="border-top:1px solid #0D0D0D">
+          <td style="color:${A};font-weight:bold;padding:2px 8px">${ev}</td>
+          <td style="color:${W};padding:2px 8px">${inr}</td>
+          <td style="color:${W};padding:2px 8px">${nf}</td>
+          <td style="color:${W};padding:2px 8px">${bd}</td>
+          <td style="color:${c};padding:2px 8px;font-weight:bold">${fii}</td>
+          <td style="color:${imp==='HIGH'?R:A};padding:2px 8px;font-weight:bold">${imp}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ CMD VIEW
+function renderCMD(){
+  document.getElementById('cmd-content').innerHTML=`
+  <div class="cb">
+    <div class="cbh">INDIA NAVIGATION COMMANDS (IN/ GROUP)</div>
+    ${[['IN TOP','Top India market intelligence feed'],['MKT / IN MKT','India full market overview NSE/BSE/MCX'],['SECTOR','NSE sectoral indices live'],['ECO or IN ECO','India economic calendar'],['RBI','RBI MPC policy tracker'],['IPO','India IPO tracker — active, upcoming, recent'],].map(([k,v])=>`<div class="cr"><span class="ck">${k} &lt;GO&gt;</span><span style="color:${W}">${v}</span></div>`).join('')}
+  </div>
+  <div class="cb">
+    <div class="cbh">GLOBAL NAVIGATION COMMANDS (GL/ GROUP)</div>
+    ${[['GL TOP','Top global market intelligence feed'],['GL MKT / GMKT','Global full market overview'],['FX','FX dashboard — INR + global + bonds'],['GEO','Geopolitical risk monitor India impact'],['FED or CB','Central bank tracker FED/ECB/BOJ/BOE/RBI'],['GL ECO','Global economic calendar'],].map(([k,v])=>`<div class="cr"><span class="ck">${k} &lt;GO&gt;</span><span style="color:${W}">${v}</span></div>`).join('')}
+  </div>
+  <div class="cb">
+    <div class="cbh">FEED + UTILITY COMMANDS</div>
+    ${[['ALL','Combined India + Global news feed'],['N ## &lt;GO&gt;','Jump to news item e.g. N 4 &lt;GO&gt;'],['CLR','Clear command history'],['CMD / HELP','This reference'],['↑ / ↓','Navigate command history'],].map(([k,v])=>`<div class="cr"><span class="ck">${k}</span><span style="color:${W}">${v}</span></div>`).join('')}
+  </div>
+  <div class="cb">
+    <div class="cbh">VOLATILITY POTENTIAL ALGORITHM (VPA) — INDIA CALIBRATED</div>
+    ${[['TIER 1 BASE','+3.0','RBI/Budget/Earnings/NFP/CPI'],['TIER 2 BASE','+1.5','FII flows/Geopolitical/Supply chain'],['RISK-OFF MULT','×1.4','EM risk-off amplified for INR sensitivity'],['RBI/GOI PREMIUM','+1.5','Central bank or government source'],['EARNINGS PREM','+1.0','Nifty50 constituent beat/miss'],['FII FLOW BOOST','+0.8','FII outflow/inflow >₹2000Cr'],['RECENCY DECAY','-0.1/hr','Stories >6hrs old decay in rank'],['MARKET SCOPE','+0.2/mkt','Each tagged market adds 0.2'],].map(([k,v,d])=>`<div class="cr"><span class="ck">${k}</span><span class="cv">${v}</span><span style="color:${D}">${d}</span></div>`).join('')}
+  </div>
+  <div class="cb">
+    <div class="cbh">DATA SOURCES & ARCHITECTURE</div>
+    ${['PRIMARY IN : NSE India API | BSE API | RBI Data Warehouse | SEBI filings','PRIMARY GL : Bloomberg OpenFIGI | Alpha Vantage | CME Group | ICE','NEWS IN   : PTI | Bloomberg Quint | ET Markets | Moneycontrol RSS','NEWS GL   : Reuters | AP | WSJ | Financial Times | CNBC feeds','MACRO IN  : MOSPI (GDP/CPI) | PPAC (oil) | DGFT (trade) | MCA21','MACRO GL  : Fed/ECB/BOJ/BOE/BIS releases | IMF/World Bank data','FII/DII   : NSDL depository | BSE bulk/block deal feed | SEBI','PRICING   : NSE/BSE WS feed | FBIL benchmarks | MCX real-time','NLP       : FinBERT-IN (India-tuned) + FinBERT-GL | spaCy NER','SCORING   : VPA v2.3 India-calibrated | WebSocket <200ms latency'].map(l=>`<div class="ar">${l}</div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════ TICKER
+function buildTicker(){
+  const inTk=inMkt.slice(0,8).map(m=>`  ${m.sym} ${fmtP(m.sym,m.price)} ${fmtC(m.chg)}  ●`).join('');
+  const glTk=glMkt.slice(0,8).map(m=>`  ${m.sym} ${fmtP(m.sym,m.price)} ${fmtC(m.chg)}  ●`).join('');
+  return inTk+' ◈◈◈ '+glTk+'  ';
+}
+let tickStr=buildTicker();
+const tickEl=document.getElementById('ticker-inner');
+tickEl.textContent=tickStr+tickStr;
+let charW=(tickStr.length*6.6)/2;
+
+setInterval(()=>{ tickOff=(tickOff+0.5)%charW; tickEl.style.left=`-${tickOff}px`; },40);
+
+// color segments in ticker
+function colorTicker(){
+  const str=buildTicker();
+  const full=str+str;
+  // Build colored spans
+  const parts=full.split('●');
+  tickEl.innerHTML=parts.map((seg,i)=>{
+    // figure color from chg
+    const trim=seg.trim();
+    const hasPlus=trim.includes('+');
+    const hasMinus=trim.match(/-\d+\.\d+%/);
+    const col=hasMinus?R:hasPlus?G:A;
+    return `<span style="color:${col}">${seg}</span>`;
+  }).join(`<span style="color:${D}">●</span>`);
+}
+
+// ═══════════════════════════════════════════════════════════════ CLOCKS
+function updateClocks(){
+  const now=new Date();
+  const fmt=d=>d.toISOString().slice(11,19);
+  const off=h=>new Date(now.getTime()+h*3600000);
+  const ist=new Date(now.getTime()+5.5*3600000);
+  document.getElementById('cl-ist').textContent=fmt(ist)+' IST';
+  document.getElementById('cl-ny').textContent=fmt(off(-4))+' NY';
+  document.getElementById('cl-ln').textContent=fmt(off(1))+' LN';
+  document.getElementById('cl-sg').textContent=fmt(off(8))+' SG';
+  document.getElementById('cl-tk').textContent=fmt(off(9))+' TK';
+}
+setInterval(updateClocks,1000); updateClocks();
+
+// ═══════════════════════════════════════════════════════════════ BLINK
+setInterval(()=>{
+  blinkOn=!blinkOn;
+  document.getElementById('blink-dot').textContent=blinkOn?'●':'○';
+  document.getElementById('cmd-ready').textContent=(blinkOn?'█':' ')+' READY';
+},500);
+
+// ═══════════════════════════════════════════════════════════════ JITTER
+setInterval(()=>{
+  inMkt=inMkt.map(m=>{
+    const j=(Math.random()-0.499)*0.07;
+    const np=m.price*(1+j/100), nc=m.chg+(Math.random()-0.5)*0.04;
+    const el=document.getElementById('mr-'+m.sym);
+    if(el&&Math.abs(j)>0.05){ el.classList.add(nc>=0?'fu':'fd'); setTimeout(()=>el.classList.remove('fu','fd'),400); }
+    return {...m,price:np,chg:nc};
+  });
+  glMkt=glMkt.map(m=>{
+    const j=(Math.random()-0.499)*0.08;
+    const np=m.price*(1+j/100), nc=m.chg+(Math.random()-0.5)*0.05;
+    const el=document.getElementById('mr-'+m.sym);
+    if(el&&Math.abs(j)>0.06){ el.classList.add(nc>=0?'fu':'fd'); setTimeout(()=>el.classList.remove('fu','fd'),400); }
+    return {...m,price:np,chg:nc};
+  });
+  renderMktList();
+  colorTicker();
+  // statusbar updates
+  const nifty=inMkt.find(m=>m.sym==='NIFTY');
+  if(nifty){ const el=document.getElementById('nse-st'); el.style.color=cc(nifty.chg); el.textContent=`NIFTY ${nifty.chg>=0?'▲':'▼'} LIVE`; }
+  const spx=glMkt.find(m=>m.sym==='SPX');
+  if(spx){ const el=document.getElementById('spx-st'); el.style.color=cc(spx.chg); el.textContent=`SPX ${spx.chg>=0?'▲':'▼'} OPEN`; }
+  const usdinr=inMkt.find(m=>m.sym==='USDINR');
+  if(usdinr) document.getElementById('usdinr-sb').textContent=usdinr.price.toFixed(2);
+  if(currentView==='mkt') renderInMkt();
+  if(currentView==='gmkt') renderGlMkt();
+},1900);
+
+// ═══════════════════════════════════════════════════════════════ VIEW SWITCH
+const ALL_VIEWS=['top','mkt','sec','eco','rbi','ipo','gmkt','fx','geo','fed','cmd'];
+
+function setView(v, group){
+  currentView=v;
+  // hide all
+  document.getElementById('view-top').style.display='none';
+  ALL_VIEWS.filter(x=>x!=='top').forEach(id=>{
+    const el=document.getElementById('view-'+id); if(el) el.style.display='none';
+  });
+  // show target
+  if(v==='top'){ document.getElementById('view-top').style.display='flex'; }
+  else { const el=document.getElementById('view-'+v); if(el) el.style.display='block'; }
+
+  // nav btn active states
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const map={'top':0,'mkt':1,'sec':2,'eco':3,'rbi':4,'ipo':5,'gmkt':7,'fx':8,'geo':9,'fed':10,'eco':3};
+  // just highlight based on current view text match
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    const txt=b.textContent.trim();
+    const vmap={'TOP':'top','MKT':'mkt','SECTOR':'sec','ECO':'eco','RBI':'rbi','IPO':'ipo','FX':'fx','GEO':'geo','FED/CB':'fed','CMD':'cmd'};
+    if(vmap[txt]===v) b.classList.add('active');
+  });
+
+  document.getElementById('vmode').textContent=v.toUpperCase()+(group?'/'+group.toUpperCase():'')+' | CMD+ENTER';
+  // lazy render
+  if(v==='mkt') renderInMkt();
+  if(v==='gmkt') renderGlMkt();
+  if(v==='sec') renderSectors();
+  if(v==='eco') renderEco();
+  if(v==='rbi') renderRBI();
+  if(v==='ipo') renderIPO();
+  if(v==='fx') renderFX();
+  if(v==='geo') renderGEO();
+  if(v==='fed') renderFED();
+  if(v==='cmd') renderCMD();
+}
+
+// ═══════════════════════════════════════════════════════════════ CMD INPUT
+const ci=document.getElementById('cmd-input');
+ci.addEventListener('keydown',function(e){
+  if(e.key==='ArrowUp'){
+    histIdx=Math.min(histIdx+1,cmdHistory.length-1);
+    if(cmdHistory.length>0) this.value=cmdHistory[cmdHistory.length-1-histIdx]||'';
+    e.preventDefault();
+  } else if(e.key==='ArrowDown'){
+    histIdx=Math.max(histIdx-1,-1);
+    this.value=histIdx<0?'':(cmdHistory[cmdHistory.length-1-histIdx]||'');
+    e.preventDefault();
+  } else if(e.key==='Enter'){
+    const raw=this.value.trim().toUpperCase(); if(!raw) return;
+    cmdHistory.push(raw); histIdx=-1;
+    document.getElementById('nav-history').textContent=cmdHistory.slice(-3).map(h=>'↑ '+h).join('  ');
+    const pts=raw.split(' '), b=pts[0], b2=pts[1]||'';
+
+    // compound commands
+    if(b==='IN'&&b2==='TOP'){ setView('top','in'); switchFeed('in'); }
+    else if(b==='GL'&&b2==='TOP'){ setView('top','gl'); switchFeed('gl'); }
+    else if(b==='ALL'||raw==='ALL'){ setView('top'); switchFeed('all'); }
+    else if(b==='IN'&&b2==='MKT') setView('mkt','in');
+    else if(b==='GL'&&b2==='MKT') setView('gmkt','gl');
+    else if(['TOP'].includes(b)) setView('top');
+    else if(['MKT','IN'].includes(b)&&!b2) setView('mkt');
+    else if(['GMKT','GL'].includes(b)&&!b2) setView('gmkt');
+    else if(b==='SECTOR'||b==='SEC') setView('sec');
+    else if(b==='ECO'&&(!b2||b2==='IN')) { setView('eco'); switchEco('in'); }
+    else if(b==='ECO'&&b2==='GL') { setView('eco'); switchEco('gl'); }
+    else if(b==='RBI') setView('rbi');
+    else if(b==='IPO') setView('ipo');
+    else if(b==='FX') setView('fx');
+    else if(b==='GEO') setView('geo');
+    else if(b==='FED'||b==='CB') setView('fed');
+    else if(b==='CMD'||b==='HELP') setView('cmd');
+    else if(b==='CLR'){ cmdHistory=[]; document.getElementById('nav-history').textContent=''; }
+    else if(b==='N'&&pts[1]){
+      const feed=getFeedNews();
+      const idx=parseInt(pts[1])-1;
+      if(feed[idx]){ selNews(feed[idx].id); setView('top'); }
+    }
+    this.value='';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════ INIT
+renderNews();
+renderDetail();
+renderMktList();
+colorTicker();
+document.getElementById('news-count').textContent=IN_NEWS.length+' ITEMS';
+document.getElementById('detail-ref').textContent='N1 <GO>';
+ci.focus();
+</script>
+</body>
+</html>
